@@ -18,7 +18,7 @@ function setup(init=true) {
   const margin = 0.1; // nuovo margine, il 10% della dimensione minima
   const midX = W / 2;
   const midY = H / 2;
-  const romboSize = min(W, H) * (1 - 2 * margin) * 0.6; // calcolo dimensione del rombo, tenendo conto dei margini
+  const romboSize = min(W, H) * (1 - 2 * margin) * 0.4; // calcolo dimensione del rombo, tenendo conto dei margini
   drawRhombo(midX, midY, romboSize); // Disegna il rombo
 
 
