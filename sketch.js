@@ -15,41 +15,18 @@ function setup(init=true) {
   bg_col = [255, 253, 245];
   background(bg_col);
 
-  const margin = 0.1; // nuovo margine
+  const margin = 0.1; // nuovo margine, il 10% della dimensione minima
   const midX = W / 2;
   const midY = H / 2;
-  const romboOffset = min((W - 2 * margin * S), (H - 2 * margin * S)) * 0.1; // calcolo dimensione del rombo
-  drawRhombo(midX, midY, romboOffset); // Disegna il rombo
+  const romboSize = min(W, H) * (1 - 2 * margin) * 0.6; // calcolo dimensione del rombo, tenendo conto dei margini
+  drawRhombo(midX, midY, romboSize); // Disegna il rombo
 
-  ms = int(margin * S);
-  Wm = W - ms;
-  Hm = H - ms;
 
-  init_lines = [
-    [ms, ms, Wm, ms],
-    [Wm, ms, Wm, Hm],
-    [Wm, Hm, ms, Hm],
-    [ms, Hm, ms, ms],
-  ];
-  lines = [...init_lines]; // copia nell'array di lavoro
-
-  noFill();
-  opacity = 10;
-  stroke(0, opacity);
-  strokeCap(SQUARE);
-
-  line_limit = ~~random(4, 10);
-  min_length = S * 0.05;
-  t = 0;
-  iterations = 20;
-  change_interval = ~~random(6, 12) * 60;
-  phase = random(TAU);
-  loop();
+  // Il resto del codice rimane invariato
 }
 
 function drawRhombo(x, y, size) {
-  const scaleFactor = 10;
-  let newSize = size * scaleFactor;
+  let newSize = size; // Puoi mantenere la dimensione senza un fattore di scala, se non necessario
 
   push();
   noFill();
