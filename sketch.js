@@ -1,53 +1,69 @@
-let data
-
-
-function preload (){
-  data = loadTable("fiducia generale percentuale - Foglio1.csv", "csv", "header"); 
+function preload() {
+  data = loadTable("fiducia generale percentuale - Foglio1.csv", "csv", "header");
 }
 
-
-
-
-
-
 function setup(init=true) {
-  W = windowWidth
-  H = windowHeight
-  S = min(W,H)
-  if(init){
-    createCanvas(W, H)
-    iOSiPadOS = (/^iP/.test(navigator.platform) || /^Mac/.test(navigator.platform) && navigator.maxTouchPoints > 4)
-  } 
-  else resizeCanvas(W, H)
-  bg_col = [255,253,245]
-  background(bg_col)
-  
-  const margin = 0.03
-  ms = int(margin * S)
-  Wm = W - ms
-  Hm = H - ms
+  W = windowWidth;
+  H = windowHeight;
+  S = min(W, H);
+
+  if (init) {
+    createCanvas(W, H);
+    iOSiPadOS = (/^iP/.test(navigator.platform) || /^Mac/.test(navigator.platform) && navigator.maxTouchPoints > 4);
+  } else resizeCanvas(W, H);
+
+  bg_col = [255, 253, 245];
+  background(bg_col);
+
+  const margin = 0.1; // nuovo margine
+  const midX = W / 2;
+  const midY = H / 2;
+  const romboOffset = min((W - 2 * margin * S), (H - 2 * margin * S)) * 0.1; // calcolo dimensione del rombo
+  drawRhombo(midX, midY, romboOffset); // Disegna il rombo
+
+  ms = int(margin * S);
+  Wm = W - ms;
+  Hm = H - ms;
 
   init_lines = [
     [ms, ms, Wm, ms],
     [Wm, ms, Wm, Hm],
     [Wm, Hm, ms, Hm],
     [ms, Hm, ms, ms],
-  ]
-  lines = [...init_lines] // copy to working array
+  ];
+  lines = [...init_lines]; // copia nell'array di lavoro
 
-  noFill()
-  opacity = 10
-  stroke(0, opacity)
-  strokeCap(SQUARE)
-  
-  line_limit = ~~random(4,10)
-  min_length = S * 0.05
-  t = 0
-  iterations = 20
-  change_interval = ~~random(6,12) * 60
-  phase = random(TAU)
-  loop()
+  noFill();
+  opacity = 10;
+  stroke(0, opacity);
+  strokeCap(SQUARE);
+
+  line_limit = ~~random(4, 10);
+  min_length = S * 0.05;
+  t = 0;
+  iterations = 20;
+  change_interval = ~~random(6, 12) * 60;
+  phase = random(TAU);
+  loop();
 }
+
+function drawRhombo(x, y, size) {
+  const scaleFactor = 10;
+  let newSize = size * scaleFactor;
+
+  push();
+  noFill();
+  stroke(0);
+  strokeWeight(2);
+  beginShape();
+  vertex(x, y - newSize); // Punto in alto
+  vertex(x + newSize, y); // Punto a destra
+  vertex(x, y + newSize); // Punto in basso
+  vertex(x - newSize, y); // Punto a sinistra
+  endShape(CLOSE);
+  pop();
+}
+
 
 function find_midpoint(line, randomization_amount=0){
   const [x1,y1,x2,y2] = line
@@ -67,12 +83,12 @@ function draw() {
   }
 
   for(let i = 0; i < iterations; i++){ // make it run a lot faster
-    
+
     let VH = true
     while(VH){
       const ln1_index = ~~random(lines.length) // step 1 selection
       const ln2_index = ~~random(lines.length)
-            
+
       // part of step 2, but makes test for step 1 easier
       const pt1 = find_midpoint(lines[ln1_index], RA) 
       const pt2 = find_midpoint(lines[ln2_index], RA)
