@@ -2,7 +2,7 @@ let data
 
 
 function preload (){
-  data = loadTable("Fiducia negli altri - età dettaglio (IT1,83_63_DF_DCCV_AVQ_PERSONE_123,1.0).csv"); 
+  data = loadTable("fiducia generale percentuale - Foglio1.csv", "csv", "header"); 
 }
 
 
