@@ -1,99 +1,104 @@
-let data;
+let data
 
-function preload() {
-  data = loadTable("Fiducia negli altri - età dettaglio (IT1,83_63_DF_DCCV_AVQ_PERSONE_123,1.0).csv");
+
+function preload (){
+  data = loadTable("Fiducia negli altri - età dettaglio (IT1,83_63_DF_DCCV_AVQ_PERSONE_123,1.0).csv"); 
 }
 
+
+
+
+
+
 function setup(init=true) {
-  W = windowWidth;
-  H = windowHeight;
-  S = min(W,H);
+  W = windowWidth
+  H = windowHeight
+  S = min(W,H)
   if(init){
-    createCanvas(W, H, WEBGL); // Attivare la modalità WEBGL
-    iOSiPadOS = (/^iP/.test(navigator.platform) || /^Mac/.test(navigator.platform) && navigator.maxTouchPoints > 4);
+    createCanvas(W, H)
+    iOSiPadOS = (/^iP/.test(navigator.platform) || /^Mac/.test(navigator.platform) && navigator.maxTouchPoints > 4)
   } 
-  else resizeCanvas(W, H);
-  bg_col = [255,253,245];
-  background(bg_col);
+  else resizeCanvas(W, H)
+  bg_col = [255,253,245]
+  background(bg_col)
   
-  const margin = 0.03;
-  ms = int(margin * S);
-  Wm = W - ms;
-  Hm = H - ms;
+  const margin = 0.03
+  ms = int(margin * S)
+  Wm = W - ms
+  Hm = H - ms
 
   init_lines = [
-    [ms, ms, 0, Wm, ms, 0],
-    [Wm, ms, 0, Wm, Hm, 0],
-    [Wm, Hm, 0, ms, Hm, 0],
-    [ms, Hm, 0, ms, ms, 0],
-  ];
-  lines = [...init_lines];
+    [ms, ms, Wm, ms],
+    [Wm, ms, Wm, Hm],
+    [Wm, Hm, ms, Hm],
+    [ms, Hm, ms, ms],
+  ]
+  lines = [...init_lines] // copy to working array
 
-  noFill();
-  opacity = 10;
-  stroke(0, opacity);
-  strokeCap(SQUARE);
+  noFill()
+  opacity = 10
+  stroke(0, opacity)
+  strokeCap(SQUARE)
   
-  line_limit = ~~random(4,10);
-  min_length = S * 0.05;
-  t = 0;
-  iterations = 20;
-  change_interval = ~~random(6,12) * 60;
-  phase = random(TAU);
-  loop();
+  line_limit = ~~random(4,10)
+  min_length = S * 0.05
+  t = 0
+  iterations = 20
+  change_interval = ~~random(6,12) * 60
+  phase = random(TAU)
+  loop()
 }
 
 function find_midpoint(line, randomization_amount=0){
-  const [x1, y1, z1, x2, y2, z2] = line;
-  const f = 0.5 + randomization_amount * (1 - 2 * Math.random());
-  return [lerp(x1, x2, f), lerp(y1, y2, f), lerp(z1, z2, f)];
+  const [x1,y1,x2,y2] = line
+  const f = 0.5 + randomization_amount * (1 - 2 * Math.random())
+  return [lerp(x1, x2, f), lerp(y1, y2, f)]
 }
 
 function draw() {
-  t++;
-  RA = 0.21 + 0.2 * cos(t/5e3 + phase);
-  
+  t++
+  RA = 0.21 + 0.2 * cos(t/5e3 + phase) // part of step 2.
+
+  // every so often, change the color from black to white 
+  // so that it doesn't just completely fill in.
   if(t % change_interval == 0){ 
-    if(t % (2 * change_interval) == 0) stroke(0, opacity);
-    else stroke(255, opacity);
+    if(t % (2 * change_interval) == 0) stroke(0, opacity)
+    else stroke(255, opacity)
   }
 
-  for(let i = 0; i < iterations; i++){
-    let VH = true;
+  for(let i = 0; i < iterations; i++){ // make it run a lot faster
+    
+    let VH = true
     while(VH){
-      const ln1_index = ~~random(lines.length);
-      const ln2_index = ~~random(lines.length);
-      
-      const pt1 = find_midpoint(lines[ln1_index], RA); 
-      const pt2 = find_midpoint(lines[ln2_index], RA);
-      
-      // Randomizza la coordinata Z per creare un effetto 3D
-      pt1[2] = random(-100, 100); 
-      pt2[2] = random(-100, 100); 
+      const ln1_index = ~~random(lines.length) // step 1 selection
+      const ln2_index = ~~random(lines.length)
+            
+      // part of step 2, but makes test for step 1 easier
+      const pt1 = find_midpoint(lines[ln1_index], RA) 
+      const pt2 = find_midpoint(lines[ln2_index], RA)
 
-      if(pt1[0] != pt2[0] && pt1[1] != pt2[1] &&
+      // vertical or horizontal check (step 1 test)
+      if(pt1[0] != pt2[0] && pt1[1] != pt2[1] && 
         !(pt1[0] == ms && pt2[0] == Wm) &&
         !(pt1[1] == ms && pt2[1] == Hm)){
-        VH = false;
-        const new_line = [...pt1, ...pt2];
-        line(...new_line);
-        if(Math.random() < 0.01){ 
-          const line_length = dist(...new_line);
+        VH = false
+        const new_line = [...pt1, ...pt2]
+        line(...new_line) // step 2
+        if(Math.random() < 0.01){ // step 3 test
+          const line_length = dist(...new_line)
           if(line_length > min_length){
-            lines.push(new_line);
-            if(lines.length > line_limit) lines.shift();
+            lines.push(new_line)
+            if(lines.length > line_limit) lines.shift() // remove first in array
           }
           else {
-            lines.push(random(init_lines));
-            lines.shift();
+            lines.push(random(init_lines))
+            lines.shift()
           }
         }
-      }
+      } 
     }
   }
 }
-
-// Restante parte del codice invariata
 
 
 function keyPressed(){
